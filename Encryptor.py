@@ -355,12 +355,16 @@ def main():
             scope = {}
             exec(f.read(), scope)
             buf = scope.get('buf', b"")
+            if isinstance(buf, str):  # ensure it's bytes
+                buf = buf.encode('latin1')
 
     if args.buf86:
         with open(args.buf86, 'r') as f:
             scope = {}
             exec(f.read(), scope)
             buf86 = scope.get('buf', b"")
+            if isinstance(buf86, str):
+                buf86 = buf86.encode('latin1')
 
     if args.csharp:
         Encryptor.print_csharp()
