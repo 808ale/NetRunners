@@ -339,32 +339,24 @@ def main():
     parser.add_argument("-csdelegates", action="store_true", help="Print win32 api delegates in C# format.")
     parser.add_argument("-powershell", action="store_true", help="Print the output in PowerShell format.")
     parser.add_argument("-xor", action="store_true", help="Print the output in C# format using XOR encryption.")
-    parser.add_argument("-buf", type=str, help="Path to Python-formatted x64 shellcode file (defines `buf`).")
-    parser.add_argument("-buf86", type=str, help="Path to Python-formatted x86 shellcode file (defines `buf86`).")
+    parser.add_argument("-buf", type=str, help="Path to .bin file containing raw x64 shellcode.")
+    parser.add_argument("-buf86", type=str, help="Path to .bin file containing raw x86 shellcode.")
 
     # Parse the arguments
     args = parser.parse_args()
 
-    # Load shellcode buffers from files (.py format) 
+    # Load shellcode buffers from .bin files
     global buf, buf86
     if not args.buf and not args.buf86:
         parser.error("At least one of --buf or --buf86 must be specified.")
 
     if args.buf:
-        with open(args.buf, 'r') as f:
-            scope = {}
-            exec(f.read(), scope)
-            buf = scope.get('buf', b"")
-            if isinstance(buf, str):  # ensure it's bytes
-                buf = buf.encode('latin1')
+        with open(args.buf, 'rb') as f:
+            buf = f.read()
 
     if args.buf86:
-        with open(args.buf86, 'r') as f:
-            scope = {}
-            exec(f.read(), scope)
-            buf86 = scope.get('buf', b"")
-            if isinstance(buf86, str):
-                buf86 = buf86.encode('latin1')
+        with open(args.buf86, 'rb') as f:
+            buf86 = f.read()
 
     if args.csharp:
         Encryptor.print_csharp()
